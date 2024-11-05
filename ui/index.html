@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Title of the document</title>
+</head>
+<body>
+
+<h1>Coordinates</h1>
+<p id="coordsP">Current coordinates: X: -, Y: -</p>
+<label>Uusi X-koordinaatti:</label>
+<input id="xCoord"><br>
+<label>Uusi Y-koordinaatti:</label>
+<input id="yCoord"><br>
+<button id="sendBtn">Lähetä</button>
+
+<script>
+    const coordsP = document.getElementById("coordsP")
+    const xInput = document.getElementById("xCoord")
+    const yInput = document.getElementById("yCoord")
+    const sendBtn = document.getElementById("sendBtn");
+
+    function updateCoordsP(x,y){      
+      coordsP.textContent = "Current coordinates: X: " + x + ", Y: " + y
+    }    
+    
+    fetch('http://localhost:8081/coordinates', {
+          method: 'GET',
+          headers: {
+          'Content-Type': 'application/json'
+          }          
+      })
+      .then(response => (response.json()))
+      .then(data => updateCoordsP(data.x,data.y))
+      
+    sendBtn.addEventListener("click", function() {
+      const data = {x: Number(xInput.value), y: Number(yInput.value)}
+      fetch('http://localhost:8081/coordinates', {
+          method: 'POST',
+          headers: {
+          'Content-Type': 'application/json'
+          },
+          body: JSON.stringify(data)
+      })
+      .then(response => response.json())
+      .then(data => updateCoordsP(data.x,data.y))
+      .catch((error) => console.error('Error:', error));
+
+    });
+</script>
+
+</body>
+</html>
